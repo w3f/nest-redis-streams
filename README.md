@@ -22,7 +22,7 @@ yarn add @w3f/nest-redis-streams
 
 ```
 import { Module } from '@nestjs/common';
-import { RedisStreamsModule } from 'nest-redis-streams';
+import { RedisStreamsModule } from '@w3f/nest-redis-streams';
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ export class AppModule {}
 
 ```
 import { Injectable } from '@nestjs/common';
-import { RedisStreamsClient } from 'nest-redis-streams';
+import { RedisStreamsClient } from '@w3f/nest-redis-streams';
 
 @Injectable()
 export class PublisherService {
@@ -58,7 +58,7 @@ export class PublisherService {
 
 ```
 import { NestFactory } from '@nestjs/core';
-import { RedisStreamsServer } from 'nest-redis-streams';
+import { RedisStreamsServer } from '@w3f/nest-redis-streams';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
