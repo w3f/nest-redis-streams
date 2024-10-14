@@ -11,6 +11,19 @@
     "README.md",
     "LICENSE"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/w3f/nest-redis-streams.git"
+  },
+  "keywords": [
+    "nestjs",
+    "redis",
+    "streams",
+    "microservices"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "build": "nest build",
     "prepublishOnly": "yarn build",

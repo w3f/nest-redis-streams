@@ -4,6 +4,8 @@ import { RedisStreamsOptions } from '../interfaces/redis-streams-options';
 import { v4 as uuidv4 } from 'uuid';
 const Redis = require('ioredis')
 
+// TODO: Connection pool for consumer connections
+
 interface ExtendedData<T> {
   payload: T;
   id?: string;
@@ -106,6 +108,7 @@ export class RedisStreamsClient extends ClientProxy {
           }
           observer.error(new Error('No response received after maximum retries'));
         } catch (err) {
+          // TODO: More granular error handling
           observer.error(err);
         } finally {
           await consumer.quit();

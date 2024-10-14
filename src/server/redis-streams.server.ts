@@ -2,6 +2,8 @@ import { Server, CustomTransportStrategy } from '@nestjs/microservices';
 import { RedisStreamsOptions } from '../interfaces/redis-streams-options';
 const Redis = require('ioredis')
 
+// TODO: Implement a dead-letter queue for failed messages
+
 export class RedisStreamsServer extends Server implements CustomTransportStrategy {
   private client: typeof Redis;
 
@@ -58,11 +60,13 @@ export class RedisStreamsServer extends Server implements CustomTransportStrateg
   private async handleMessage(pattern: string, data: any, messageId: string) {
     const handler = this.messageHandlers.get(pattern);
     if (handler) {
+      // TODO: Timeout mechanism for message processing
       try {
         await handler(data);
         await this.client.xack(this.options.streamName, this.options.groupName, messageId);
       } catch (err) {
         console.error('Error processing message:', err);
+        // TODO: Retry mechanism or move to dead-letter queue
       }
     } else {
       console.warn(`No handler found for pattern: ${pattern}`);
