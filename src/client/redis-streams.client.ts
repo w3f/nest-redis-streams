@@ -63,6 +63,21 @@ export class RedisStreamsClient extends ClientProxy {
     );
   }
   
+  /**
+   * @deprecated This method uses Redis Streams for synchronous-like communication, which is not recommended.
+   * It may lead to performance issues, reduced scalability, and increased complexity.
+   * 
+   * Alternatives:
+   * 1. Use the `emit` method for asynchronous communication with Redis Streams.
+   * 2. Consider using the NestJS RabbitMQ transport for RPC-like functionality, as it has built-in support for request-response patterns.
+   * 3. Implement a callback-based system with correlation IDs for request-response patterns if you must use Redis Streams.
+   * 4. Use Redis pub/sub for simple request-response scenarios that don't require persistence.
+   * 5. Use a different technology (e.g., gRPC, REST) for truly synchronous communication.
+   * 
+   * If you need RPC-like functionality in a message queue system, the RabbitMQ transport is a better choice as it supports this pattern natively and more efficiently.
+   * 
+   * This method will be removed in a future version.
+   */
   send<TResult = any, TInput = any>(pattern: any, data: TInput): Observable<TResult> {
     const responseStream = `${this.options.streamName}:response:${uuidv4()}`;
     const requestId = uuidv4();
