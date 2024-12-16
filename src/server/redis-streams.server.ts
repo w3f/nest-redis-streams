@@ -36,8 +36,8 @@ export class RedisStreamsServer extends Server implements CustomTransportStrateg
       try {
         const results = await this.client.xreadgroup(
           'GROUP', this.options.groupName, this.options.consumerName,
-          'COUNT', '1',
-          'BLOCK', '0',
+          'COUNT', '100',
+          'BLOCK', '1000', // Timeout to prevent busy waiting
           'STREAMS', this.options.streamName, '>'
         );
 

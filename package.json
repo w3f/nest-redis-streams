@@ -1,6 +1,6 @@
 {
   "name": "@w3f/nest-redis-streams",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A package for managing Redis streams with Nest.js",
   "author": "W3F SecOps Team <devops@web3.foundation>",
   "license": "MIT",
