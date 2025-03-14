@@ -7,6 +7,7 @@ const mockXadd = jest.fn().mockResolvedValue('ok');
 const mockXread = jest.fn();
 const mockXtrim = jest.fn().mockResolvedValue(0);
 const mockQuit = jest.fn().mockResolvedValue(undefined);
+const mockPing = jest.fn().mockResolvedValue('PONG');
 
 jest.mock('ioredis', () => {
   return jest.fn().mockImplementation(() => ({
@@ -14,6 +15,7 @@ jest.mock('ioredis', () => {
     xread: mockXread,
     xtrim: mockXtrim,
     quit: mockQuit,
+    ping: mockPing,
   }));
 });
 
@@ -69,67 +71,12 @@ describe('RedisStreamsClient', () => {
     );
   });
   
-  it('should send a message and receive a response', async () => {
+  it('should throw an error when using send method', async () => {
     const pattern = 'test-pattern';
     const data = { message: 'Hello, Redis Streams!' };
-    const responseData = { result: 'Success' };
-
-    mockXread.mockResolvedValueOnce([
-      [
-        'test-stream:response:mocked-uuid',
-        [['1-0', ['data', JSON.stringify({ id: 'mocked-uuid', data: responseData })]]]
-      ]
-    ]);
-
-    const result = await lastValueFrom(client.send(pattern, data));
-
-    expect(result).toEqual(responseData);
-    expect(mockXadd).toHaveBeenCalledWith(
-      'test-stream',
-      '*',
-      'pattern', pattern,
-      'data', JSON.stringify(data),
-      'id', 'mocked-uuid',
-      'responseStream', 'test-stream:response:mocked-uuid'
-    );
-    expect(mockXread).toHaveBeenCalledWith(
-      'BLOCK',
-      5000,
-      'STREAMS',
-      'test-stream:response:mocked-uuid',
-      '$'
-    );
-    expect(mockXtrim).toHaveBeenCalledWith('test-stream:response:mocked-uuid', 'MAXLEN', 0);
-    
-    // Wait for any pending promises to resolve
-    await new Promise(process.nextTick);
-    
-    expect(mockQuit).toHaveBeenCalled();
-  });
-  
-  it('should throw an error after max retries', async () => {
-    const pattern = 'test-pattern';
-    const data = { message: 'Hello, Redis Streams!' };
-
-    mockXread.mockResolvedValue(null);
 
     await expect(lastValueFrom(client.send(pattern, data))).rejects.toThrow(
-      'No response received after maximum retries'
+      'The send method is not supported. Redis Streams is used only for asynchronous communication in this implementation.'
     );
-
-    expect(mockXread).toHaveBeenCalledTimes(5);
-    expect(mockQuit).toHaveBeenCalled();
-  });
-
-  it('should handle errors during send', async () => {
-    const pattern = 'test-pattern';
-    const data = { message: 'Hello, Redis Streams!' };
-
-    mockXread.mockRejectedValue(new Error('Redis error'));
-
-    await expect(lastValueFrom(client.send(pattern, data))).rejects.toThrow('Redis error');
-
-    expect(mockXread).toHaveBeenCalledTimes(1);
-    expect(mockQuit).toHaveBeenCalled();
   });
 });

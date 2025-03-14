@@ -6,12 +6,14 @@ import { RedisStreamsOptions } from '../interfaces/redis-streams-options';
 const mockXgroup = jest.fn().mockResolvedValue('OK');
 const mockXreadgroup = jest.fn().mockResolvedValue(null);
 const mockQuit = jest.fn().mockResolvedValue(undefined);
+const mockPing = jest.fn().mockResolvedValue('PONG');
 
 jest.mock('ioredis', () => {
   return jest.fn().mockImplementation(() => ({
     xgroup: mockXgroup,
     xreadgroup: mockXreadgroup,
     quit: mockQuit,
+    ping: mockPing,
   }));
 });
 
