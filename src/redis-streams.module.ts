@@ -9,8 +9,17 @@ export class RedisStreamsModule {
       module: RedisStreamsModule,
       providers: [
         {
+          provide: 'REDIS_STREAMS_OPTIONS',
+          useValue: options,
+        },
+        {
           provide: RedisStreamsClient,
-          useValue: new RedisStreamsClient(options),
+          useFactory: async (redisOptions: RedisStreamsOptions) => {
+            const client = new RedisStreamsClient(redisOptions);
+            await client.connect();
+            return client;
+          },
+          inject: ['REDIS_STREAMS_OPTIONS'],
         },
       ],
       exports: [RedisStreamsClient],
@@ -27,12 +36,18 @@ export class RedisStreamsModule {
       imports: options.imports || [],
       providers: [
         {
-          provide: RedisStreamsClient,
-          useFactory: async (...args: any[]) => {
-            const config = await options.useFactory(...args);
-            return new RedisStreamsClient(config);
-          },
+          provide: 'REDIS_STREAMS_OPTIONS',
+          useFactory: options.useFactory,
           inject: options.inject || [],
+        },
+        {
+          provide: RedisStreamsClient,
+          useFactory: async (redisOptions: RedisStreamsOptions) => {
+            const client = new RedisStreamsClient(redisOptions);
+            await client.connect();
+            return client;
+          },
+          inject: ['REDIS_STREAMS_OPTIONS'],
         },
       ],
       exports: [RedisStreamsClient],
